@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 @RestController
+@CrossOrigin(origins = "*", maxAge = 3600)
 public class WalletController {
 
     @Autowired
