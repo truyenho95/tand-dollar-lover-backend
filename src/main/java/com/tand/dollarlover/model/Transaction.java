@@ -2,6 +2,7 @@ package com.tand.dollarlover.model;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 @Entity
@@ -12,7 +13,7 @@ public class Transaction {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @NotEmpty(message = "Please enter How much?")
+//    @NotNull(message = "Please enter How much?")
     private double amount;
 
     private boolean isIncome = true;
@@ -23,7 +24,6 @@ public class Transaction {
 
     @ManyToOne
     @JoinColumn(name = "wallet_id")
-    @NotEmpty(message = "choose a wallet please!")
     private Wallet wallet;
 
 //    constructor
