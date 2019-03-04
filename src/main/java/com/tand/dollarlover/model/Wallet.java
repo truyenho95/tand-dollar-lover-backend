@@ -1,6 +1,7 @@
 package com.tand.dollarlover.model;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "wallet")
@@ -11,7 +12,13 @@ public class Wallet {
     private long id;
 
     private String name;
+
+
+
     private double openingBalance;
+
+    @OneToMany(targetEntity = Transaction.class)
+    private List<Transaction> transactions;
 
     public Wallet() {
     }
@@ -43,5 +50,13 @@ public class Wallet {
 
     public void setOpeningBalance(double openingBalance) {
         this.openingBalance = openingBalance;
+    }
+
+    public List<Transaction> getTransactions() {
+        return transactions;
+    }
+
+    public void setTransactions(List<Transaction> transactions) {
+        this.transactions = transactions;
     }
 }
