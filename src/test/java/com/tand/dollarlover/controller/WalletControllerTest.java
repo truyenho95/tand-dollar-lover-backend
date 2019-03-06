@@ -6,7 +6,7 @@ import com.tand.dollarlover.model.Wallet;
 import com.tand.dollarlover.service.Impl.WalletServiceImpl;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +14,6 @@ import org.springframework.boot.json.JsonParseException;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -22,19 +21,15 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.context.WebApplicationContext;
 
-import java.awt.image.SampleModel;
 import java.io.IOException;
-import java.net.URI;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
-import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.request;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebAppConfiguration
 @RunWith(SpringRunner.class)
@@ -79,20 +74,23 @@ public class WalletControllerTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         mvc = MockMvcBuilders.standaloneSetup(walletController).build();
-/*
         Wallet wallet1 = Wallet.builder()
                 .name("Test OK")
                 .openingBalance(10000)
                 .build();
         wallets = new ArrayList<>();
-        wallets.add(wallet1);*/
+        wallets.add(wallet1);
+
+        walletService.save(Optional.ofNullable(wallet1));
     }
 
+    @BeforeEach
     protected String mapToJson(Object object) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
         return objectMapper.writeValueAsString(object);
     }
 
+    @BeforeEach
     protected <T> T mapFromJson(String json, Class<T> clazz)
             throws JsonParseException, IOException {
 
@@ -116,22 +114,23 @@ public class WalletControllerTest {
 
         // given(personRepo.findOne(1l)).willReturn(person);
         when(walletService.findAll()).thenReturn(Collections.singleton(wallet1));*/
-
         String uri = "/wallets";
         MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.get("/wallets")
-                .content("{\"id\":\"1\",\"name\":\"test\",\"openingBalance\":\"100.0\"}")
-                .contentType(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(content())
+                //  .content("{\"id\":\"1\",\"name\":\"test\",\"openingBalance\":\"100.0\"}")
+                .accept(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().is2xxSuccessful())
-               // .andExpect(content().json("{'id': 1,'name': 'test','openingBalance': 100.0}"))
+                //.andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+                //.andExpect(jsonPath("$[0].name").value("test"))
+                //.andExpect(content().json("{\'id\':\"1\",\'name\':\"test\",\'openingBalance\':\"100.0\"}"))
+
                 .andReturn();
 
 
         String content = mvcResult.getResponse().getContentAsString();
         System.out.println(content);
-        //Wallet[] wallets = mapFromJson(content, Wallet[].class);
+        /*Wallet[] wallets = mapFromJson(content, Wallet[].class);
 
-        //Assertions.assertTrue(wallets.length > 0);
+        Assertions.assertTrue(wallets.length > 0);*/
 
 
         /*RestTemplate restTemplate = new RestTemplate();
