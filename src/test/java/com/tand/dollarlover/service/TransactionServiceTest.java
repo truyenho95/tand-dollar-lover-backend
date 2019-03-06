@@ -69,6 +69,12 @@ public class TransactionServiceTest {
         Assertions.assertEquals(transactionArgumentCaptor.getValue().getAmount(), 10000);
     }
 
+    @Test
+    public void testDeleteATransactionById() {
+        transactionService.remove(transaction.getId());
+        verify(transactionRepository, times(1)).deleteById(1L);
+    }
+
     @TestConfiguration
     static class EmployeeServiceImplTestContextConfiguration {
 
