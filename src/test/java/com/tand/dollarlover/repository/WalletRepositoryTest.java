@@ -8,24 +8,20 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.web.servlet.MockMvc;
 
-import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 @RunWith(SpringRunner.class)
-@WebMvcTest(WalletRepository.class)
-@SpringJUnitConfig(WalletRepositoryTestConfig.class)
+//@WebMvcTest(WalletRepository.class)
+@DataJpaTest
+/*@SpringJUnitConfig(WalletRepositoryTestConfig.class)*/
 public class WalletRepositoryTest {
     private static Wallet wallet;
     private static List<Wallet> emptyWallets;
@@ -38,52 +34,63 @@ public class WalletRepositoryTest {
         wallets.add(wallet);
     }
 
+    /* @Autowired
+     private MockMvc mvc;*/
     @Autowired
-    private MockMvc mvc;
-    @MockBean
     private WalletRepository walletRepository;
     @Autowired
-    private EntityManager em;
+    private TestEntityManager entityManager;
     @Autowired
     private EntityManagerFactory entityManagerFactory;
 
     @BeforeEach
     void setupEntityManager() {
-        when(entityManagerFactory.createEntityManager()).thenReturn(em);
+        // when(entityManagerFactory.createEntityManager()).thenReturn(em);
     }
 
     @AfterEach
     void resetMocks() {
         Mockito.reset(entityManagerFactory);
-        Mockito.reset(em);
+        // Mockito.reset(em);
     }
     @Test
     public void findAllWith0Wallet() {
-        when(walletRepository.findAll()).thenReturn(emptyWallets);
+        /*when(walletRepository.findAll()).thenReturn(emptyWallets);
         Assertions.assertEquals(emptyWallets, walletRepository.findAll());
-        verify(walletRepository).findAll();
+        verify(walletRepository).findAll();*/
+
+        List<Wallet> wallet = new ArrayList<>();
+        System.out.println(wallet);
+        Iterable<Wallet> find = walletRepository.findAll();
+        System.out.println(find);
+        Assertions.assertEquals(wallet, find);
     }
 
     @Test
     public void findAll() {
-        when(walletRepository.findAll()).thenReturn(wallets);
-        Assertions.assertNotNull(wallets);
-        Assertions.assertEquals(wallets, walletRepository.findAll());
+        Wallet wallet = new Wallet();
+        wallet.setName("test OK");
+
+        wallet = entityManager.persistAndFlush(wallet);
+        List<Wallet> testList = new ArrayList<Wallet>(Collections.singleton(wallet));
+
+        Iterable<Wallet> find = walletRepository.findAll();
+
+        Assertions.assertEquals(testList, find);
     }
 
     @Test
     public void findWalletById() {
-/*        Long id = 1L;
-        //Optional<Wallet> wallets = walletRepository.findById(id);
-        wallets.add(wallet);*/
-        //when(walletRepository.findById(1L)).thenReturn(Optional.of(new Wallet("OK", 100)));
+        Wallet wallet = new Wallet();
+        wallet.setName("test ID");
+
+        wallet = entityManager.persistAndFlush(wallet);
+        ArrayList<Wallet> testList = new ArrayList<Wallet>(Collections.singleton(wallet));
+        Optional<Wallet> optional = testList.stream().findAny();
+
         Optional<Wallet> find = walletRepository.findById(1L);
 
-
-        Assertions.assertNotNull(find);
-        Assertions.assertEquals("OK", find.get().getName());
-        Assertions.assertEquals(100, find.get().getOpeningBalance());
-
+        Assertions.assertEquals(optional, find);
     }
 
 
