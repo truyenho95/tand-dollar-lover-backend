@@ -23,10 +23,11 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebAppConfiguration
@@ -67,6 +68,7 @@ public class WalletControllerTest {
     @MockBean
     private WalletServiceImpl walletService;
 
+    ObjectMapper mapper = new ObjectMapper();
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
@@ -101,17 +103,24 @@ public class WalletControllerTest {
 
     @Test
     public void getWalletList() throws Exception {
-        // when(walletService.findAll()).thenReturn(wallets);
+        Wallet wallet1 = Wallet.builder()
+                .name("Test OK")
+                .openingBalance(10000)
+                .build();
+
+        // given(personRepo.findOne(1l)).willReturn(person);
+        when(walletService.findAll()).thenReturn(Collections.singleton(wallet1));
 
         String uri = "/wallets";
-        MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.get(uri)
+        MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.get("/wallets")
+                //.content(mapper.writeValueAsString())
                 .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().is2xxSuccessful())
-                .andExpect(content().json("[{'id': 1,'name': 'test';'openingBalance': 10000.0}]"))
+                //  .andExpect(content().json("[{'id': 1,'name': 'test','openingBalance': 10000.0}]"))
                 .andReturn();
 
 
-      /*  String content = mvcResult.getResponse().getContentAsString();
+        /*String content = mvcResult.getResponse().getContentAsString();
         Wallet[] wallets = mapFromJson(content, Wallet[].class);*/
 
         //Assertions.assertTrue(wallets.length > 0);
