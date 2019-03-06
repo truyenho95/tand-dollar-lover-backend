@@ -2,8 +2,11 @@ package com.tand.dollarlover.repository;
 
 import com.tand.dollarlover.model.Wallet;
 import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -15,6 +18,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -43,6 +47,16 @@ public class WalletRepositoryTest {
     @Autowired
     private EntityManagerFactory entityManagerFactory;
 
+    @BeforeEach
+    void setupEntityManager() {
+        when(entityManagerFactory.createEntityManager()).thenReturn(em);
+    }
+
+    @AfterEach
+    void resetMocks() {
+        Mockito.reset(entityManagerFactory);
+        Mockito.reset(em);
+    }
     @Test
     public void findAllWith0Wallet() {
         when(walletRepository.findAll()).thenReturn(emptyWallets);
@@ -57,17 +71,21 @@ public class WalletRepositoryTest {
         Assertions.assertEquals(wallets, walletRepository.findAll());
     }
 
-/*    @Test
-    public void findWalletTest() {
-        Long id = 1L;
+    @Test
+    public void findWalletById() {
+/*        Long id = 1L;
         //Optional<Wallet> wallets = walletRepository.findById(id);
-        wallets.add(wallet);
-        when(walletRepository.findById(id)).thenReturn(wallets);
+        wallets.add(wallet);*/
+        //when(walletRepository.findById(1L)).thenReturn(Optional.of(new Wallet("OK", 100)));
+        Optional<Wallet> find = walletRepository.findById(1L);
 
-        Assertions.assertNotNull(wallet);
-        Assertions.assertEquals(contains(wallets.toString()), wallet.getName());
-        //Assertions.assertEquals(100, wallet.getOpeningBalance());
-    }*/
+
+        Assertions.assertNotNull(find);
+        Assertions.assertEquals("OK", find.get().getName());
+        Assertions.assertEquals(100, find.get().getOpeningBalance());
+
+    }
+
 
 
 }

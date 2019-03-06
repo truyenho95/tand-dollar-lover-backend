@@ -9,6 +9,7 @@ import javax.persistence.EntityManagerFactory;
 
 @Configuration
 public class WalletRepositoryTestConfig {
+
     @Bean
     public EntityManager entityManager(EntityManagerFactory entityManagerFactory) {
         return Mockito.mock(EntityManager.class);
@@ -16,7 +17,6 @@ public class WalletRepositoryTestConfig {
 
     @Bean
     public EntityManagerFactory entityManagerFactory() {
-        EntityManagerFactory entityManagerFactory = Mockito.mock(EntityManagerFactory.class);
-        return entityManagerFactory;
+        return Mockito.mock(EntityManagerFactory.class);
     }
 }
