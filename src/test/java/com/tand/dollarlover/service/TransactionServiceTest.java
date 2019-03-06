@@ -23,8 +23,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(TransactionService.class)
@@ -39,7 +38,6 @@ public class TransactionServiceTest {
         transaction.setId(1L);
         transactions = Arrays.asList(transaction);
         transactionList = new PageImpl<>(transactions);
-        //transactions.add(wallet);
     }
 
     @MockBean
@@ -65,14 +63,28 @@ public class TransactionServiceTest {
     @Test
     public void testSaveANewTransaction() {
         transactionService.save(transaction);
-        verify(transactionRepository, times(1)).save(transactionArgumentCaptor.capture());
         Assertions.assertEquals(transactionArgumentCaptor.getValue().getAmount(), 10000);
+        verify(transactionRepository, times(1)).save(transactionArgumentCaptor.capture());
     }
 
     @Test
     public void testDeleteATransactionById() {
         transactionService.remove(transaction.getId());
         verify(transactionRepository, times(1)).deleteById(1L);
+    }
+
+    @Test
+    public void findAllTransactionsWhichHaveOneTransaction() {
+        when(transactionRepository.findAll()).thenReturn(transactions);
+        Assertions.assertEquals(transactions, transactionService.findAll());
+        verify(transactionRepository, times(1)).findAll();
+    }
+
+    @Test
+    public void findAllWithTransactionsWhichHaveZeroTransaction() {
+        when(transactionRepository.findAll()).thenReturn(emptyTransactions);
+        Assertions.assertEquals(emptyTransactions, transactionService.findAll());
+        verify(transactionRepository, times(1)).findAll();
     }
 
     @TestConfiguration
