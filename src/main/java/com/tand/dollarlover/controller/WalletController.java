@@ -19,8 +19,8 @@ public class WalletController {
     @Autowired
     private WalletService walletService;
 
-    @RequestMapping(value = "/wallets", method = RequestMethod.GET)
-    @ResponseBody
+    @RequestMapping(value = "/wallets", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+/*    @ResponseBody*/
     public ResponseEntity<Iterable<Wallet>> getAllWallets() {
         Iterable<Wallet> wallets = walletService.findAll();
         if (wallets == null) {
