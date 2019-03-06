@@ -22,6 +22,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.mockito.Mockito.*;
 
@@ -85,6 +86,22 @@ public class TransactionServiceTest {
         when(transactionRepository.findAll()).thenReturn(emptyTransactions);
         Assertions.assertEquals(emptyTransactions, transactionService.findAll());
         verify(transactionRepository, times(1)).findAll();
+    }
+
+    @Test
+    public void findByIdFound() {
+        Long id = 1l;
+        when(transactionRepository.findById(id)).thenReturn(Optional.of(transaction));
+        Assertions.assertEquals(Optional.of(transaction), transactionService.findById(id));
+        verify(transactionRepository, times(1)).findById(id);
+    }
+
+    @Test
+    public void findByIdNotFound() {
+        Long id = 1L;
+        when(transactionRepository.findById(id)).thenReturn(null);
+        Assertions.assertNull(transactionRepository.findById(id));
+        verify(transactionRepository).findById(id);
     }
 
     @TestConfiguration
