@@ -6,6 +6,8 @@ import com.tand.dollarlover.service.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service("TransactionService")
 public class TransactionServiceImpl implements TransactionService {
 
@@ -19,8 +21,8 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public Transaction findById(Long id) {
-        return transactionRepository.findById(id).get();
+    public Optional<Transaction> findById(Long id) {
+        return transactionRepository.findById(id);
     }
 
     @Override
