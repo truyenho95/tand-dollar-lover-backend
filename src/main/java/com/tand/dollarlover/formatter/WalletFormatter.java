@@ -7,8 +7,9 @@ import org.springframework.format.Formatter;
 
 import java.text.ParseException;
 import java.util.Locale;
+import java.util.Optional;
 
-public class WalletFormatter implements Formatter<Wallet> {
+public class WalletFormatter implements Formatter<Optional<Wallet>> {
 
     private WalletService walletService;
 
@@ -17,12 +18,12 @@ public class WalletFormatter implements Formatter<Wallet> {
         this.walletService = walletService;
     }
     @Override
-    public Wallet parse(String text, Locale locale) throws ParseException {
+    public Optional<Wallet> parse(String text, Locale locale) throws ParseException {
         return walletService.findById((long) Integer.parseInt(text));
     }
 
     @Override
-    public String print(Wallet object, Locale locale) {
+    public String print(Optional<Wallet> object, Locale locale) {
         return null;
     }
 }
