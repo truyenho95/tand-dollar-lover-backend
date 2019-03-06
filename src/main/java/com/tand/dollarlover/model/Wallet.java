@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Builder
 @Data
@@ -20,8 +21,18 @@ public class Wallet {
     private Long id;
 
     private String name;
+
+
+
     private double openingBalance;
 
+
+    @OneToMany(targetEntity = Transaction.class)
+    private List<Transaction> transactions;
+
+    public Wallet() {
+    }
+  
     public Wallet(String name, double openingBalance) {
         this.name = name;
         this.openingBalance = openingBalance;
@@ -49,5 +60,13 @@ public class Wallet {
 
     public void setOpeningBalance(double openingBalance) {
         this.openingBalance = openingBalance;
+    }
+
+    public List<Transaction> getTransactions() {
+        return transactions;
+    }
+
+    public void setTransactions(List<Transaction> transactions) {
+        this.transactions = transactions;
     }
 }
