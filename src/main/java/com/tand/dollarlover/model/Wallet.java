@@ -1,15 +1,24 @@
 package com.tand.dollarlover.model;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import javax.persistence.*;
 import java.util.List;
 
+@Builder
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "wallet")
 public class Wallet {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     private String name;
 
@@ -17,22 +26,23 @@ public class Wallet {
 
     private double openingBalance;
 
+
     @OneToMany(targetEntity = Transaction.class)
     private List<Transaction> transactions;
 
     public Wallet() {
     }
-
+  
     public Wallet(String name, double openingBalance) {
         this.name = name;
         this.openingBalance = openingBalance;
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

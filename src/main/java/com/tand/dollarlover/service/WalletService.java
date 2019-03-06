@@ -1,15 +1,22 @@
 package com.tand.dollarlover.service;
 
 import com.tand.dollarlover.model.Wallet;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 public interface WalletService {
 
-    Wallet findById(Long id);
+    @Transactional
+    Optional<Wallet> findById(Long id);
 
+    @Transactional
     Iterable<Wallet> findAll();
 
-    void save(Wallet wallet);
+    @Transactional
+    void save(Optional<Wallet> wallet);
 
+    @Transactional
     void remove(Long id);
 
 }
