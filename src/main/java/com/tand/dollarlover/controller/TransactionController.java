@@ -29,7 +29,7 @@ public class TransactionController {
     @RequestMapping(value = "/transactions/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Transaction> getTransaction(@PathVariable("id") long id) {
         System.out.println("Fetching Transaction with id " + id);
-        Transaction transaction = transactionService.findById(id);
+        Transaction transaction = transactionService.findById(id).get();
         if (transaction == null) {
             System.out.println("Transaction with id " + id + " not found");
             return new ResponseEntity<Transaction>(HttpStatus.NOT_FOUND);
@@ -53,7 +53,7 @@ public class TransactionController {
     public ResponseEntity<Transaction> updateTransaction(@PathVariable("id") long id, @RequestBody Transaction transaction) {
         System.out.println("Updating Transaction " + id);
 
-        Transaction currentTransaction = transactionService.findById(id);
+        Transaction currentTransaction = transactionService.findById(id).get();
 
         if (transaction == null) {
             System.out.println("Transaction with id " + id + " not found");
@@ -76,7 +76,7 @@ public class TransactionController {
     public ResponseEntity<Transaction> deleteTransaction(@PathVariable("id") long id) {
         System.out.println("Fetching & Deleting Transaction with id " + id);
 
-        Transaction transaction = transactionService.findById(id);
+        Transaction transaction = transactionService.findById(id).get();
         if (transaction == null) {
             System.out.println("Unable to delete. Transaction with id " + id + " not found");
             return new ResponseEntity<Transaction>(HttpStatus.NOT_FOUND);
