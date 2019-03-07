@@ -23,10 +23,7 @@ public class Wallet {
 
     private String name;
 
-
-
     private double openingBalance;
-
 
     @OneToMany(targetEntity = Transaction.class)
     private List<Transaction> transactions;
@@ -36,8 +33,7 @@ public class Wallet {
         this.name = name;
         this.openingBalance = openingBalance;
     }
-
-
+  
     public Wallet(String name, double openingBalance) {
         this.name = name;
         this.openingBalance = openingBalance;

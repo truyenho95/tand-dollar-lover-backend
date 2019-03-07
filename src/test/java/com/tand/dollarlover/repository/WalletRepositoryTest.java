@@ -59,11 +59,11 @@ public class WalletRepositoryTest {
         Assertions.assertEquals(emptyWallets, walletRepository.findAll());
         verify(walletRepository).findAll();*/
 
-        List<Wallet> wallet = new ArrayList<>();
-        System.out.println(wallet);
+        List<Wallet> wallets = new ArrayList<>();
+        System.out.println(wallets);
         Iterable<Wallet> find = walletRepository.findAll();
         System.out.println(find);
-        Assertions.assertEquals(wallet, find);
+        Assertions.assertEquals(wallets, find);
     }
 
     @Test
@@ -72,7 +72,7 @@ public class WalletRepositoryTest {
         wallet.setName("test OK");
 
         wallet = entityManager.persistAndFlush(wallet);
-        List<Wallet> testList = new ArrayList<Wallet>(Collections.singleton(wallet));
+        List<Wallet> testList = new ArrayList<>(Collections.singleton(wallet));
 
         Iterable<Wallet> find = walletRepository.findAll();
 
@@ -85,14 +85,11 @@ public class WalletRepositoryTest {
         wallet.setName("test ID");
 
         wallet = entityManager.persistAndFlush(wallet);
-        ArrayList<Wallet> testList = new ArrayList<Wallet>(Collections.singleton(wallet));
+        ArrayList<Wallet> testList = new ArrayList<>(Collections.singleton(wallet));
         Optional<Wallet> optional = testList.stream().findAny();
 
         Optional<Wallet> find = walletRepository.findById(wallet.getId());
 
         Assertions.assertEquals(optional, find);
     }
-
-
-
 }
