@@ -19,25 +19,24 @@ public class Transaction {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-
     private double amount;
 
+    @Builder.Default
     private boolean isIncome = true;
 
     private String descriptions;
 
+    @Builder.Default
     private Date date = new Date();
 
     @ManyToOne
     @JoinColumn(name = "wallet_id")
     private Wallet wallet;
 
-    public Transaction(double amount, boolean isIncome, String descriptions, Date date, Wallet wallet) {
+    public Transaction(double amount, boolean isIncome, String descriptions) {
         this.amount = amount;
         this.isIncome = isIncome;
         this.descriptions = descriptions;
-        this.date = date;
-        this.wallet = wallet;
     }
 
     public long getId() {
