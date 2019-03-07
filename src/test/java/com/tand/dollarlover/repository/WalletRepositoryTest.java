@@ -51,7 +51,7 @@ public class WalletRepositoryTest {
     @AfterEach
     void resetMocks() {
         Mockito.reset(entityManagerFactory);
-        // Mockito.reset(em);
+        Mockito.reset(entityManager);
     }
     @Test
     public void findAllWith0Wallet() {
@@ -88,7 +88,7 @@ public class WalletRepositoryTest {
         ArrayList<Wallet> testList = new ArrayList<Wallet>(Collections.singleton(wallet));
         Optional<Wallet> optional = testList.stream().findAny();
 
-        Optional<Wallet> find = walletRepository.findById(1L);
+        Optional<Wallet> find = walletRepository.findById(wallet.getId());
 
         Assertions.assertEquals(optional, find);
     }

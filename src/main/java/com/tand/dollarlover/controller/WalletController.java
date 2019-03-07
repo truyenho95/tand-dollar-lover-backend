@@ -55,7 +55,7 @@ public class WalletController {
     }
 
     @RequestMapping(value = "/wallets/{id}", method = RequestMethod.PUT)
-    public ResponseEntity<Wallet> updateWallet(@PathVariable("id") long id, @RequestBody Wallet wallet) {
+    public ResponseEntity<Wallet> updateWallet(@PathVariable("id") Long id, @RequestBody Wallet wallet) {
         System.out.println("Updating Wallet " + id);
 
         Optional<Wallet> currentWallet = walletService.findById(id);

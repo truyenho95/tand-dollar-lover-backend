@@ -20,6 +20,7 @@ public class Wallet {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+
     private String name;
 
 
@@ -30,9 +31,13 @@ public class Wallet {
     @OneToMany(targetEntity = Transaction.class)
     private List<Transaction> transactions;
 
-    public Wallet() {
+    public Wallet(Long id, String name, double openingBalance) {
+        this.id = id;
+        this.name = name;
+        this.openingBalance = openingBalance;
     }
-  
+
+
     public Wallet(String name, double openingBalance) {
         this.name = name;
         this.openingBalance = openingBalance;
