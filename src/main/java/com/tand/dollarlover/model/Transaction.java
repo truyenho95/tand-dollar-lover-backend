@@ -19,8 +19,6 @@ public class Transaction {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-
-    //    @NotNull(message = "Please enter How much?")
     private double amount;
 
     @Builder.Default
@@ -41,7 +39,6 @@ public class Transaction {
         this.descriptions = descriptions;
     }
 
-    //    getter and setter
     public long getId() {
         return id;
     }
