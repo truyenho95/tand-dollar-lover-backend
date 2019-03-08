@@ -6,7 +6,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.Date;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import java.sql.Date;
 
 @Builder
 @Data
@@ -26,8 +28,7 @@ public class Transaction {
 
     private String descriptions;
 
-    @Builder.Default
-    private Date date = new Date();
+    private Date date;
 
     @ManyToOne
     @JoinColumn(name = "wallet_id")

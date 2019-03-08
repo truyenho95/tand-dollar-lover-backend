@@ -10,6 +10,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.sql.Date;
+import java.util.Optional;
+
 @RestController
 @CrossOrigin(origins = "*",maxAge = 3600)
 public class TransactionController {
@@ -18,13 +21,60 @@ public class TransactionController {
     private TransactionService transactionService;
 
     @RequestMapping(value = "/transactions",method = RequestMethod.GET)
-    public ResponseEntity<Iterable<Transaction>> getAllTransactions(){
-        Iterable<Transaction> transactions = transactionService.findAll();
-        if (transactions == null) {
+    public ResponseEntity<Iterable<Transaction>> getAllTransactions
+            (
+            @RequestParam("timeStart") Optional<Date>  timeStart,
+            @RequestParam("timeEnd") Optional<Date> timeEnd,
+            @RequestParam("walletId") Optional<Long> walletId
+            )
+    {
+
+        Iterable<Transaction> transactions;
+        if (timeStart.isPresent())
+        {
+            if(walletId.isPresent()){
+                transactions = transactionService.findAllByDateBetweenAndWallet_Id(timeStart,timeEnd,walletId);
+            }
+            else{
+                  transactions = transactionService.findAllByDateBetween(timeStart,timeEnd);
+            }
+        }
+        else {
+            transactions = transactionService.findAll();
+        }
+
+
+        if (transactions == null)
+        {
             return new ResponseEntity<Iterable<Transaction>>(HttpStatus.NO_CONTENT);
         }
-        return new ResponseEntity<Iterable<Transaction>>(transactions, HttpStatus.OK);
-    }
+            return new ResponseEntity<Iterable<Transaction>>(transactions, HttpStatus.OK);
+        }
+
+//        timeStart.toLocalDate();
+
+//        if (timeStart.isPresent())
+//        {
+//            Iterable<Transaction> transactions = transactionService.findAllByDateBetweenAndWallet_Id(timeStart,timeEnd,walletId);
+//            if (transactions == null) {
+//                return new ResponseEntity<Iterable<Transaction>>(HttpStatus.NO_CONTENT);
+//            }
+//            return new ResponseEntity<Iterable<Transaction>>(transactions, HttpStatus.OK);
+//        }
+//        else {
+//            Iterable<Transaction> transactions = transactionService.findAll();
+//            if (transactions == null) {
+//                return new ResponseEntity<Iterable<Transaction>>(HttpStatus.NO_CONTENT);
+//            }
+//            return new ResponseEntity<Iterable<Transaction>>(transactions, HttpStatus.OK);
+//        }
+
+//        Iterable<Transaction> transactions = transactionService.findAll();
+//        if (transactions == null) {
+//            return new ResponseEntity<Iterable<Transaction>>(HttpStatus.NO_CONTENT);
+//        }
+//        return new ResponseEntity<Iterable<Transaction>>(transactions, HttpStatus.OK);
+
 
     @RequestMapping(value = "/transactions/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Transaction> getTransaction(@PathVariable("id") long id) {
