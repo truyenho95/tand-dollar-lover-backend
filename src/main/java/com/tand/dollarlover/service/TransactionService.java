@@ -14,7 +14,7 @@ public interface TransactionService {
 
     Iterable<Transaction> findAll();
 
-    Transaction findById(Long id);
+    Optional<Transaction> findById(Long id);
 
     void  save(Transaction transaction);
 

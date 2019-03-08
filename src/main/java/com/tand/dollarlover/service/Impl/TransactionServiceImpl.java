@@ -33,8 +33,8 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public Transaction findById(Long id) {
-        return transactionRepository.findById(id).get();
+    public Optional<Transaction> findById(Long id) {
+        return transactionRepository.findById(id);
     }
 
     @Override

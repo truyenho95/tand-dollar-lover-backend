@@ -1,10 +1,19 @@
 package com.tand.dollarlover.model;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import java.sql.Date;
+import java.sql.Date
 
+@Builder
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "transaction")
 public class Transaction {
@@ -12,25 +21,26 @@ public class Transaction {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-
-//    @NotNull(message = "Please enter How much?")
     private double amount;
 
+    @Builder.Default
     private boolean isIncome = true;
 
     private String descriptions;
 
+    @Builder.Default
     private Date date;
 
     @ManyToOne
     @JoinColumn(name = "wallet_id")
     private Wallet wallet;
 
-//    constructor
-    public Transaction() {
+    public Transaction(double amount, boolean isIncome, String descriptions) {
+        this.amount = amount;
+        this.isIncome = isIncome;
+        this.descriptions = descriptions;
     }
 
-//    getter and setter
     public long getId() {
         return id;
     }
