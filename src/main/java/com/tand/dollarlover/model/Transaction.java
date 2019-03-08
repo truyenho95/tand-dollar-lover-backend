@@ -28,7 +28,6 @@ public class Transaction {
 
     private String descriptions;
 
-    @Builder.Default
     private Date date;
 
     @ManyToOne
