@@ -20,7 +20,7 @@ public class CategoryController {
     private CategoryService categoryService;
 
     @GetMapping(value = "/categories", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Iterable<Category>> getAllCatogories() {
+    public ResponseEntity<Iterable<Category>> getAllCategories() {
         Iterable<Category> categories = categoryService.findAll();
         if (categories == null) {
             return new ResponseEntity<Iterable<Category>>((HttpStatus.NO_CONTENT));
