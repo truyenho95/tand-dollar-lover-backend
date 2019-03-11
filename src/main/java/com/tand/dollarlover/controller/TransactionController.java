@@ -1,6 +1,8 @@
 package com.tand.dollarlover.controller;
 
 import com.tand.dollarlover.model.Transaction;
+import com.tand.dollarlover.model.Wallet;
+import com.tand.dollarlover.service.Impl.WalletServiceImpl;
 import com.tand.dollarlover.service.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -19,6 +21,9 @@ public class TransactionController {
 
     @Autowired
     private TransactionService transactionService;
+
+    @Autowired
+    private WalletServiceImpl walletService;
 
     @RequestMapping(value = "/transactions",method = RequestMethod.GET)
     public ResponseEntity<Iterable<Transaction>> getAllTransactions
@@ -91,8 +96,30 @@ public class TransactionController {
     public ResponseEntity<Void> createTransaction(@RequestBody Transaction transaction, UriComponentsBuilder ucBuilder) {
         System.out.println("Creating Transaction " + transaction.getId());
         System.out.println("Creating Transaction in Wallet " + transaction.getWallet().getName());
+        Optional<Wallet> findWalletByID = walletService.findById(transaction.getWallet().getId());
+
+        if (findWalletByID == null) {
+            System.out.println("Wallet with id " + findWalletByID + " not found");
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
 
         transactionService.save(transaction);
+
+        Double balance = findWalletByID.get().getBalance();
+        Double amount = transaction.getAmount();
+        Double newBalance;
+        if (transaction.isIncome()) {
+            newBalance = balance + amount;
+        } else {
+            newBalance = balance - amount;
+        }
+
+
+        findWalletByID.get().setId(transaction.getWallet().getId());
+        findWalletByID.get().setBalance(newBalance);
+
+        walletService.save(findWalletByID);
+
 
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(ucBuilder.path("/transactions/{id}").buildAndExpand(transaction.getId()).toUri());

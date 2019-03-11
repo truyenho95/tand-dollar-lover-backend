@@ -23,25 +23,25 @@ public class Wallet {
 
     private String name;
 
-    private double openingBalance;
+    private double balance;
 
     @OneToMany(targetEntity = Transaction.class)
     private List<Transaction> transactions;
 
-    public Wallet(Long id, String name, double openingBalance) {
+    public Wallet(Long id, String name, double balance) {
         this.id = id;
         this.name = name;
-        this.openingBalance = openingBalance;
-    }
-  
-    public Wallet(String name, double openingBalance) {
-        this.name = name;
-        this.openingBalance = openingBalance;
+        this.balance = balance;
     }
 
-    public Wallet(String name, double openingBalance, List<Transaction> transactions) {
+    public Wallet(String name, double balance) {
         this.name = name;
-        this.openingBalance = openingBalance;
+        this.balance = balance;
+    }
+
+    public Wallet(String name, double balance, List<Transaction> transactions) {
+        this.name = name;
+        this.balance = balance;
         this.transactions = transactions;
     }
 
@@ -61,12 +61,12 @@ public class Wallet {
         this.name = name;
     }
 
-    public double getOpeningBalance() {
-        return openingBalance;
+    public double getBalance() {
+        return balance;
     }
 
-    public void setOpeningBalance(double openingBalance) {
-        this.openingBalance = openingBalance;
+    public void setBalance(double balance) {
+        this.balance = balance;
     }
 
     public List<Transaction> getTransactions() {
