@@ -78,7 +78,7 @@ public class WalletController {
         System.out.println("Fetching & Deleting Wallet with id " + id);
 
         Optional<Wallet> wallet = walletService.findById(id);
-        if (wallet == null) {
+        if (!wallet.isPresent()) {
             System.out.println("Unable to delete. Wallet with id " + id + " not found");
             return new ResponseEntity<Wallet>(HttpStatus.NOT_FOUND);
         }

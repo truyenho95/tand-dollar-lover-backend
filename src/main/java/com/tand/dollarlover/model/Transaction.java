@@ -21,9 +21,6 @@ public class Transaction {
     private long id;
     private double amount;
 
-    @Builder.Default
-    private boolean isIncome = true;
-
     private String descriptions;
 
     private Date date;
@@ -32,19 +29,23 @@ public class Transaction {
     @JoinColumn(name = "wallet_id")
     private Wallet wallet;
 
-    public Transaction(double amount, boolean isIncome, String descriptions, Date date, Wallet wallet) {
+    @ManyToOne
+    @JoinColumn(name = "category_id")
+    private Category category;
+
+    public Transaction(double amount, String descriptions, Date date, Wallet wallet, Category category) {
         this.amount = amount;
-        this.isIncome = isIncome;
         this.descriptions = descriptions;
         this.date = date;
         this.wallet = wallet;
+        this.category = category;
     }
 
-    public Transaction(double amount, boolean isIncome, String descriptions) {
+    public Transaction(double amount, String descriptions) {
         this.amount = amount;
-        this.isIncome = isIncome;
         this.descriptions = descriptions;
     }
+
 
     public long getId() {
         return id;
@@ -62,12 +63,12 @@ public class Transaction {
         this.amount = amount;
     }
 
-    public boolean isIncome() {
-        return isIncome;
+    public Category getCategory() {
+        return category;
     }
 
-    public void setIncome(boolean income) {
-        isIncome = income;
+    public void setCategory(Category category) {
+        this.category = category;
     }
 
     public String getDescriptions() {
