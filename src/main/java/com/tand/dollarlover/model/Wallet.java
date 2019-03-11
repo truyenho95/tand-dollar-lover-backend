@@ -39,6 +39,12 @@ public class Wallet {
         this.openingBalance = openingBalance;
     }
 
+    public Wallet(String name, double openingBalance, List<Transaction> transactions) {
+        this.name = name;
+        this.openingBalance = openingBalance;
+        this.transactions = transactions;
+    }
+
     public Long getId() {
         return id;
     }
