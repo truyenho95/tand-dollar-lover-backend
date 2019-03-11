@@ -108,7 +108,7 @@ public class TransactionController {
         Double balance = findWalletByID.get().getBalance();
         Double amount = transaction.getAmount();
         Double newBalance;
-        if (transaction.isIncome()) {
+        if (transaction.getCategory().getIsIncome()) {
             newBalance = balance + amount;
         } else {
             newBalance = balance - amount;
@@ -142,7 +142,7 @@ public class TransactionController {
         currentTransaction.setAmount(transaction.getAmount());
         currentTransaction.setDate(transaction.getDate());
         currentTransaction.setDescriptions(transaction.getDescriptions());
-        currentTransaction.setIncome(transaction.isIncome());
+        currentTransaction.setCategory(transaction.getCategory());
         currentTransaction.setWallet(transaction.getWallet());
 
         transactionService.save(currentTransaction);
