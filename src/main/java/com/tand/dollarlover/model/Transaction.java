@@ -6,8 +6,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 import java.sql.Date;
 
 @Builder
@@ -33,6 +31,14 @@ public class Transaction {
     @ManyToOne
     @JoinColumn(name = "wallet_id")
     private Wallet wallet;
+
+    public Transaction(double amount, boolean isIncome, String descriptions, Date date, Wallet wallet) {
+        this.amount = amount;
+        this.isIncome = isIncome;
+        this.descriptions = descriptions;
+        this.date = date;
+        this.wallet = wallet;
+    }
 
     public Transaction(double amount, boolean isIncome, String descriptions) {
         this.amount = amount;
