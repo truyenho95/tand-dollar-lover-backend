@@ -91,7 +91,7 @@ public class TransactionControllerTest {
         if (responseWallet.getBody().startsWith("[]")) {
             Wallet wallet1 = Wallet.builder()
                     .name("test for trans")
-                    .openingBalance(10000)
+                    .balance(10000)
                     .build();
             HttpEntity<Wallet> request = new HttpEntity<>(wallet1);
             restTemplate.postForEntity(uriWallets, request, String.class);

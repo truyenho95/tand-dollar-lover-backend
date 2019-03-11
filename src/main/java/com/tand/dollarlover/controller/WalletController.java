@@ -66,7 +66,7 @@ public class WalletController {
         }
 
         currentWallet.get().setName(wallet.getName());
-        currentWallet.get().setOpeningBalance(wallet.getOpeningBalance());
+        currentWallet.get().setBalance(wallet.getBalance());
         currentWallet.get().setId(wallet.getId());
 
         walletService.save(currentWallet);

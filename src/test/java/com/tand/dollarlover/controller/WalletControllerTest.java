@@ -49,7 +49,7 @@ public class WalletControllerTest {
         Wallet sampleWallet = Wallet.builder()
                 .id(sampleId)
                 .name(sampleName)
-                .openingBalance(sampleOpeningBalance)
+                .balance(sampleOpeningBalance)
                 .build();
     }
 
@@ -70,7 +70,7 @@ public class WalletControllerTest {
         mvc = MockMvcBuilders.standaloneSetup(walletController).build();
         Wallet wallet1 = Wallet.builder()
                 .name("Test OK")
-                .openingBalance(20000)
+                .balance(20000)
                 .build();
         wallets = new ArrayList<>();
         wallets.add(wallet1);
@@ -172,7 +172,7 @@ public class WalletControllerTest {
         if (responseEntity.getBody().startsWith("[]") || !responseEntity.getBody().contains("test delete")) {
             Wallet wallet1 = Wallet.builder()
                     .name("test delete")
-                    .openingBalance(10000)
+                    .balance(10000)
                     .build();
             HttpEntity<Wallet> request = new HttpEntity<>(wallet1);
             restTemplate.postForEntity(uriGetOrCreate, request, String.class);
@@ -205,7 +205,7 @@ public class WalletControllerTest {
         if (responseEntity.getBody().startsWith("[]") || !responseEntity.getBody().contains("test update")) {
             Wallet wallet1 = Wallet.builder()
                     .name("test update")
-                    .openingBalance(10000)
+                    .balance(10000)
                     .build();
             HttpEntity<Wallet> request = new HttpEntity<>(wallet1);
             restTemplate.postForEntity(uriGetOrCreate, request, String.class);
