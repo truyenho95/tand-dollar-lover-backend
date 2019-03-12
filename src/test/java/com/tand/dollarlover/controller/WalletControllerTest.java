@@ -59,6 +59,7 @@ public class WalletControllerTest {
 
     @Autowired
     private MockMvc mvc;
+
     @MockBean
     private WalletController walletController;
     @MockBean
@@ -76,6 +77,25 @@ public class WalletControllerTest {
         wallets.add(wallet1);
 
         walletService.save(Optional.ofNullable(wallet1));
+    }
+
+    @Before
+    public void createWalletIfNotExist() throws Exception {
+        RestTemplate restTemplate = new RestTemplate();
+
+        final String getOrCreateURL = "http://localhost:" + 8080 + "/wallets";
+        URI uriWallet = new URI(getOrCreateURL);
+
+        ResponseEntity<String> responseWallet = restTemplate.getForEntity(uriWallet, String.class);
+
+        if (responseWallet.getBody().startsWith("[]")) {
+            Wallet wallet1 = Wallet.builder()
+                    .name("dummy")
+                    .balance(10000)
+                    .build();
+            HttpEntity<Wallet> request = new HttpEntity<>(wallet1);
+            restTemplate.postForEntity(uriWallet, request, String.class);
+        }
     }
 
     @Test
@@ -160,40 +180,6 @@ public class WalletControllerTest {
     }
 
     @Test
-    public void testDeleteWallet() throws Exception {
-
-
-        final String getOrCreateURL = "http://localhost:" + 8080 + "/wallets";
-        URI uriGetOrCreate = new URI(getOrCreateURL);
-
-        RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<String> responseEntity = restTemplate.getForEntity(uriGetOrCreate, String.class);
-
-        if (responseEntity.getBody().startsWith("[]") || !responseEntity.getBody().contains("test delete")) {
-            Wallet wallet1 = Wallet.builder()
-                    .name("test delete")
-                    .balance(10000)
-                    .build();
-            HttpEntity<Wallet> request = new HttpEntity<>(wallet1);
-            restTemplate.postForEntity(uriGetOrCreate, request, String.class);
-        }
-
-        String replaceCommaWithSpace = restTemplate.getForEntity(uriGetOrCreate, String.class).getBody().replace(",", " ");
-        Long idForDelete = Long.valueOf(replaceCommaWithSpace.substring(7, 9).trim());
-        String stringForAssert = idForDelete.toString();
-
-        final String deleteUrl = "http://localhost:" + 8080 + "/wallets/" + idForDelete;
-        URI uriDelete = new URI(deleteUrl);
-        try {
-            restTemplate.delete(uriDelete);
-            Assertions.assertFalse(restTemplate.getForEntity(uriGetOrCreate, String.class).getBody().contains(stringForAssert));
-            Assertions.assertEquals(200, responseEntity.getStatusCodeValue());
-        } catch (HttpClientErrorException ex) {
-            Assertions.assertEquals(500, ex.getRawStatusCode());
-        }
-    }
-
-    @Test
     public void testUpdateWallet() throws Exception {
 
         final String getOrCreateURL = "http://localhost:" + 8080 + "/wallets";
@@ -201,16 +187,6 @@ public class WalletControllerTest {
 
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<String> responseEntity = restTemplate.getForEntity(uriGetOrCreate, String.class);
-
-        if (responseEntity.getBody().startsWith("[]") || !responseEntity.getBody().contains("test update")) {
-            Wallet wallet1 = Wallet.builder()
-                    .name("test update")
-                    .balance(10000)
-                    .build();
-            HttpEntity<Wallet> request = new HttpEntity<>(wallet1);
-            restTemplate.postForEntity(uriGetOrCreate, request, String.class);
-        }
-
 
         String replaceCommaWithSpace = restTemplate.getForEntity(uriGetOrCreate, String.class).getBody().replace(",", " ");
         Long idForUpdate = Long.valueOf(replaceCommaWithSpace.substring(7, 9).trim());
@@ -231,4 +207,28 @@ public class WalletControllerTest {
             Assertions.assertEquals(500, ex.getRawStatusCode());
         }
     }
+
+    @Test
+    public void testDeleteWallet() throws Exception {
+
+
+        final String getOrCreateURL = "http://localhost:" + 8080 + "/wallets";
+        URI uriGetOrCreate = new URI(getOrCreateURL);
+
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<String> responseEntity = restTemplate.getForEntity(uriGetOrCreate, String.class);
+
+        String replaceCommaWithSpace = restTemplate.getForEntity(uriGetOrCreate, String.class).getBody().replace(",", " ");
+        Long idForDelete = Long.valueOf(replaceCommaWithSpace.substring(7, 9).trim());
+
+        final String deleteUrl = "http://localhost:" + 8080 + "/wallets/" + idForDelete;
+        URI uriDelete = new URI(deleteUrl);
+        try {
+            restTemplate.delete(uriDelete);
+            Assertions.assertEquals(200, responseEntity.getStatusCodeValue());
+        } catch (HttpClientErrorException ex) {
+            Assertions.assertEquals(500, ex.getRawStatusCode());
+        }
+    }
+
 }
