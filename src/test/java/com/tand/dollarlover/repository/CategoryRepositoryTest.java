@@ -37,6 +37,7 @@ public class CategoryRepositoryTest {
     @Autowired
     private EntityManagerFactory entityManagerFactory;
 
+
     @AfterEach
     void resetMock() {
         Mockito.reset(entityManagerFactory);
@@ -76,4 +77,5 @@ public class CategoryRepositoryTest {
 
         Assertions.assertEquals(optionalCategory, find);
     }
+
 }
