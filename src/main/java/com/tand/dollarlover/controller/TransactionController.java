@@ -16,7 +16,7 @@ import java.sql.Date;
 import java.util.Optional;
 
 @RestController
-@CrossOrigin(origins = "*",maxAge = 3600)
+//@CrossOrigin(origins = "*",maxAge = 3600)
 public class TransactionController {
 
     @Autowired
