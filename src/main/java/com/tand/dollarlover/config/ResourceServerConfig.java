@@ -23,8 +23,8 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
         http
                 .anonymous().disable()
                 .authorizeRequests()
-                .antMatchers("/wallets/**").access("hasRole('USER')")
-                .antMatchers("/transactions/**").access("hasRole('USER')")
+                .antMatchers("/wallets/**").access("hasRole('ROLE_USER')")
+                .antMatchers("/transactions/**").access("hasRole('ROLE_USER')")
                 .antMatchers("/users/**").access("hasRole('ADMIN')")
                 .and().exceptionHandling().accessDeniedHandler(new OAuth2AccessDeniedHandler());
     }
