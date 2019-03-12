@@ -1,7 +1,8 @@
 package com.tand.dollarlover.controller;
 
-import com.tand.dollarlover.model.Wallet;
-import com.tand.dollarlover.service.Impl.WalletServiceImpl;
+
+import com.tand.dollarlover.model.Category;
+import com.tand.dollarlover.service.Impl.CategoryServiceImpl;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Before;
@@ -23,7 +24,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.context.WebApplicationContext;
 
 import java.net.URI;
 import java.util.ArrayList;
@@ -35,66 +35,64 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebAppConfiguration
 @RunWith(SpringRunner.class)
-@WebMvcTest(WalletController.class)
-@SpringJUnitConfig(WalletControllerTestConfig.class)
-public class WalletControllerTest {
+@WebMvcTest(CategoryController.class)
+@SpringJUnitConfig(CategoryControllerTestConfig.class)
 
+public class CategoryControllerTest {
     static {
         Long sampleId = 1L;
         String sampleName = "Sample Name";
-        Double sampleOpeningBalance = 10000d;
+        Boolean sampleIsIncome = true;
 
-        Wallet emptyWallet = Wallet.builder().build();
+        Category emptyCategory = Category.builder().build();
 
-        Wallet sampleWallet = Wallet.builder()
+        Category sampleCategory = Category.builder()
                 .id(sampleId)
                 .name(sampleName)
-                .balance(sampleOpeningBalance)
+                .isIncome(sampleIsIncome)
                 .build();
     }
 
-    @Autowired
-    WebApplicationContext webApplicationContext;
-    private List<Wallet> wallets;
+    private List<Category> categories;
 
     @Autowired
     private MockMvc mvc;
-
     @MockBean
-    private WalletController walletController;
+    private CategoryController categoryController;
     @MockBean
-    private WalletServiceImpl walletService;
+    private CategoryServiceImpl categoryService;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mvc = MockMvcBuilders.standaloneSetup(walletController).build();
-        Wallet wallet1 = Wallet.builder()
-                .name("Test OK")
-                .balance(20000)
+        mvc = MockMvcBuilders.standaloneSetup(categoryController).build();
+        Category category1 = Category.builder()
+                .id(1L)
+                .isIncome(true)
+                .name("Sample Category")
                 .build();
-        wallets = new ArrayList<>();
-        wallets.add(wallet1);
+        categories = new ArrayList<>();
+        categories.add(category1);
 
-        walletService.save(Optional.ofNullable(wallet1));
+        categoryService.save(Optional.ofNullable((category1)));
     }
 
     @Before
-    public void createWalletIfNotExist() throws Exception {
+    public void createCategoryIfNotExist() throws Exception {
         RestTemplate restTemplate = new RestTemplate();
 
-        final String getOrCreateURL = "http://localhost:" + 8080 + "/wallets";
-        URI uriWallet = new URI(getOrCreateURL);
+        final String getOrCreateURL = "http://localhost:" + 8080 + "/categories";
+        URI uriCategory = new URI(getOrCreateURL);
 
-        ResponseEntity<String> responseWallet = restTemplate.getForEntity(uriWallet, String.class);
+        ResponseEntity<String> responseCategory = restTemplate.getForEntity(uriCategory, String.class);
 
-        if (responseWallet.getBody().startsWith("[]")) {
-            Wallet wallet1 = Wallet.builder()
-                    .name("dummy")
-                    .balance(10000)
+        if (responseCategory.getBody().startsWith("[]")) {
+            Category category = Category.builder()
+                    .name("Market")
+                    .isIncome(true)
                     .build();
-            HttpEntity<Wallet> request = new HttpEntity<>(wallet1);
-            restTemplate.postForEntity(uriWallet, request, String.class);
+            HttpEntity<Category> request = new HttpEntity<>(category);
+            restTemplate.postForEntity(uriCategory, request, String.class);
         }
     }
 
@@ -104,17 +102,16 @@ public class WalletControllerTest {
     }
 
     @Test
-    public void givenWallets_whenGetWallets_thenResponseOK() throws Exception {
-        mvc.perform(get("/wallets"))
+    public void givenCategories_whenGetCategories_thenResponseOK() throws Exception {
+        mvc.perform(get("/categories"))
                 .andExpect(status().isOk());
     }
 
-
     @Test
-    public void testGetAllWalletList() throws Exception {
+    public void testGetAllCategoryList() throws Exception {
         RestTemplate restTemplate = new RestTemplate();
 
-        final String baseUrl = "http://localhost:" + 8080 + "/wallets";
+        final String baseUrl = "http://localhost:" + 8080 + "/categories";
         URI uri = new URI(baseUrl);
 
         ResponseEntity<String> result = restTemplate.getForEntity(uri, String.class);
@@ -129,10 +126,10 @@ public class WalletControllerTest {
     }
 
     @Test
-    public void testGetWalletById() throws Exception {
+    public void testGetCategoryById() throws Exception {
         RestTemplate restTemplate = new RestTemplate();
 
-        final String baseUrl = "http://localhost:" + 8080 + "/wallets";
+        final String baseUrl = "http://localhost:" + 8080 + "/categories";
         URI uri = new URI(baseUrl);
 
         ResponseEntity<String> responseEntity = restTemplate.getForEntity(uri, String.class);
@@ -140,7 +137,7 @@ public class WalletControllerTest {
         String result = responseEntity.getBody().replace(",", " ");
         Long idForGet = Long.valueOf(result.substring(7, 9).trim());
 
-        final String urlGet = "http://localhost:" + 8080 + "/wallets/" + idForGet;
+        final String urlGet = "http://localhost:" + 8080 + "/categories/" + idForGet;
         URI uriGet = new URI(urlGet);
 
         ResponseEntity<String> getById = restTemplate.getForEntity(uriGet, String.class);
@@ -152,19 +149,18 @@ public class WalletControllerTest {
         System.out.println(obj);
     }
 
-
     @Test
-    public void testCreateWallet() throws Exception {
+    public void testCreateCategory() throws Exception {
         RestTemplate restTemplate = new RestTemplate();
 
-        final String baseUrl = "http://localhost:" + 8080 + "/wallets";
+        final String baseUrl = "http://localhost:" + 8080 + "/categories";
         URI uri = new URI(baseUrl);
 
-        Wallet wallet = new Wallet("test create", 1500.0);
+        Category category = new Category("test create", true);
 
         HttpHeaders headers = new HttpHeaders();
 
-        HttpEntity<Wallet> request = new HttpEntity<>(wallet, headers);
+        HttpEntity<Category> request = new HttpEntity<>(category, headers);
         restTemplate.postForEntity(uri, request, String.class);
 
         ResponseEntity<String> result = restTemplate.getForEntity(uri, String.class);
@@ -180,9 +176,9 @@ public class WalletControllerTest {
     }
 
     @Test
-    public void testUpdateWallet() throws Exception {
+    public void testUpdateCategory() throws Exception {
 
-        final String getOrCreateURL = "http://localhost:" + 8080 + "/wallets";
+        final String getOrCreateURL = "http://localhost:" + 8080 + "/categories";
         URI uriGetOrCreate = new URI(getOrCreateURL);
 
         RestTemplate restTemplate = new RestTemplate();
@@ -192,12 +188,12 @@ public class WalletControllerTest {
         Long idForUpdate = Long.valueOf(replaceCommaWithSpace.substring(7, 9).trim());
 
 
-        final String updateURL = "http://localhost:" + 8080 + "/wallets/" + idForUpdate;
+        final String updateURL = "http://localhost:" + 8080 + "/categories/" + idForUpdate;
         URI uriUpdate = new URI(updateURL);
 
-        Wallet updatedWallet = new Wallet(idForUpdate, "updated", 123);
+        Category updatedCategory = new Category(idForUpdate, "updated", true);
 
-        HttpEntity<Wallet> requestUpdate = new HttpEntity<>(updatedWallet);
+        HttpEntity<Category> requestUpdate = new HttpEntity<>(updatedCategory);
 
         try {
             restTemplate.exchange(uriUpdate, HttpMethod.PUT, requestUpdate, Void.class);
@@ -209,10 +205,10 @@ public class WalletControllerTest {
     }
 
     @Test
-    public void testDeleteWallet() throws Exception {
+    public void testDeleteCategory() throws Exception {
 
 
-        final String getOrCreateURL = "http://localhost:" + 8080 + "/wallets";
+        final String getOrCreateURL = "http://localhost:" + 8080 + "/categories";
         URI uriGetOrCreate = new URI(getOrCreateURL);
 
         RestTemplate restTemplate = new RestTemplate();
@@ -221,7 +217,7 @@ public class WalletControllerTest {
         String replaceCommaWithSpace = restTemplate.getForEntity(uriGetOrCreate, String.class).getBody().replace(",", " ");
         Long idForDelete = Long.valueOf(replaceCommaWithSpace.substring(7, 9).trim());
 
-        final String deleteUrl = "http://localhost:" + 8080 + "/wallets/" + idForDelete;
+        final String deleteUrl = "http://localhost:" + 8080 + "/categories/" + idForDelete;
         URI uriDelete = new URI(deleteUrl);
         try {
             restTemplate.delete(uriDelete);
@@ -230,5 +226,4 @@ public class WalletControllerTest {
             Assertions.assertEquals(500, ex.getRawStatusCode());
         }
     }
-
 }

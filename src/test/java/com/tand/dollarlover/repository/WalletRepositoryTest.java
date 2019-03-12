@@ -21,16 +21,12 @@ import java.util.Optional;
 @RunWith(SpringRunner.class)
 //@WebMvcTest(WalletRepository.class)
 @DataJpaTest
-/*@SpringJUnitConfig(WalletRepositoryTestConfig.class)*/
 public class WalletRepositoryTest {
-    private static Wallet wallet;
-    private static List<Wallet> emptyWallets;
-    private static List<Wallet> wallets;
 
     static {
-        wallet = new Wallet("OK", 100);
-        emptyWallets = new ArrayList<>();
-        wallets = new ArrayList<>();
+        Wallet wallet = new Wallet("OK", 100);
+        List<Wallet> emptyWallets = new ArrayList<>();
+        List<Wallet> wallets = new ArrayList<>();
         wallets.add(wallet);
     }
 

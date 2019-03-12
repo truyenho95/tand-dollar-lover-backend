@@ -56,7 +56,7 @@ public class TransactionRepositoryTest {
     @Test
     public void findAll() {
         Transaction transaction = new Transaction();
-        transaction.setIncome(true);
+        transaction.setAmount(10000);
         transaction = entityManager.persistAndFlush(transaction);
         List<Transaction> testList = new ArrayList<>(Collections.singleton(transaction));
 
@@ -68,13 +68,13 @@ public class TransactionRepositoryTest {
     @Test
     public void findTransactionById() {
         Transaction transaction = new Transaction();
-        transaction.setIncome(true);
+        transaction.setAmount(10000);
 
         transaction = entityManager.persistAndFlush(transaction);
         ArrayList<Transaction> testList = new ArrayList<>(Collections.singleton(transaction));
         Optional<Transaction> optional = testList.stream().findAny();
 
-        Optional<Transaction> find = transactionRepository.findById(1L);
+        Optional<Transaction> find = transactionRepository.findById(transaction.getId());
 
         Assertions.assertEquals(optional, find);
     }

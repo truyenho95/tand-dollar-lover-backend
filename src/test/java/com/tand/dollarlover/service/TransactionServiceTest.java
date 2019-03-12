@@ -35,7 +35,7 @@ public class TransactionServiceTest {
     private static List<Transaction> emptyTransactions;
 
     static {
-        transaction = new Transaction(10000, true, "something");
+        transaction = new Transaction(10000, "test");
         transaction.setId(1L);
         transactions = Arrays.asList(transaction);
         transactionList = new PageImpl<>(transactions);
@@ -64,8 +64,8 @@ public class TransactionServiceTest {
     @Test
     public void testSaveANewTransaction() {
         transactionService.save(transaction);
-        Assertions.assertEquals(transactionArgumentCaptor.getValue().getAmount(), 10000);
         verify(transactionRepository, times(1)).save(transactionArgumentCaptor.capture());
+        Assertions.assertEquals(transactionArgumentCaptor.getValue().getAmount(), 10000);
     }
 
     @Test

@@ -1,6 +1,7 @@
 package com.tand.dollarlover.controller;
 
 
+import com.tand.dollarlover.model.Category;
 import com.tand.dollarlover.model.Transaction;
 import com.tand.dollarlover.model.Wallet;
 import com.tand.dollarlover.service.Impl.TransactionServiceImpl;
@@ -49,7 +50,6 @@ public class TransactionControllerTest {
 
         Transaction sampleTransaction = Transaction.builder()
                 .id(sampleId)
-                .isIncome(sampleIsIncome)
                 .amount(sampleAmount)
                 .descriptions(sampleDescriptions)
                 .build();
@@ -69,7 +69,6 @@ public class TransactionControllerTest {
         MockitoAnnotations.initMocks(this);
         mvc = MockMvcBuilders.standaloneSetup(transactionController).build();
         Transaction transaction1 = Transaction.builder()
-                .isIncome(true)
                 .amount(20000)
                 .descriptions("Sample Descriptions")
                 .build();
@@ -99,34 +98,61 @@ public class TransactionControllerTest {
     }
 
     @Before
+    public void createCategoryUsingForTransTest() throws Exception {
+        RestTemplate restTemplate = new RestTemplate();
+
+        final String baseCategoryURL = "http://localhost:" + 8080 + "/categories";
+        URI uriCategories = new URI(baseCategoryURL);
+
+        ResponseEntity<String> responseCategory = restTemplate.getForEntity(uriCategories, String.class);
+
+        if (responseCategory.getBody().startsWith("[]")) {
+            Category category = Category.builder()
+                    .name("Market")
+                    .isIncome(true)
+                    .build();
+            HttpEntity<Category> request = new HttpEntity<>(category);
+            restTemplate.postForEntity(uriCategories, request, String.class);
+        }
+    }
+
+    @Before
     public void createTransIfNotExist() throws Exception {
         Date date = new Date();
         java.sql.Date sqlDate = convertUtilToSql(date);
-
         RestTemplate restTemplate = new RestTemplate();
 
         final String getOrCreateURL = "http://localhost:" + 8080 + "/transactions";
         URI uriTrans = new URI(getOrCreateURL);
-
         final String baseWalletUrl = "http://localhost:" + 8080 + "/wallets";
         URI uriWallets = new URI(baseWalletUrl);
+        final String baseCategoryUrl = "http://localhost:" + 8080 + "/categories";
+        URI uriCategories = new URI(baseCategoryUrl);
 
         ResponseEntity<String> responseTrans = restTemplate.getForEntity(uriTrans, String.class);
-
         ResponseEntity<String> responseWallet = restTemplate.getForEntity(uriWallets, String.class);
+        ResponseEntity<String> responseCategory = restTemplate.getForEntity(uriCategories, String.class);
 
         String replaceCommaWithSpace = responseWallet.getBody().replace(",", " ");
         Long idForGetWallet = Long.valueOf(replaceCommaWithSpace.substring(7, 9).trim());
+        String replaceCommaWithSpace1 = responseCategory.getBody().replace(",", " ");
+        Long idForGetCategory = Long.valueOf(replaceCommaWithSpace1.substring(7, 9).trim());
+        System.out.println(idForGetCategory);
 
         final String urlGetWallet = "http://localhost:" + 8080 + "/wallets/" + idForGetWallet;
         URI uriGetWallet = new URI(urlGetWallet);
+        final String urlGetCategory = "http://localhost:" + 8080 + "/categories/" + idForGetCategory;
+        URI uriGetCategory = new URI(urlGetCategory);
 
         ResponseEntity<Wallet> getWallet = restTemplate.getForEntity(uriGetWallet, Wallet.class);
+        ResponseEntity<Category> getCategory = restTemplate.getForEntity(uriGetCategory, Category.class);
+
         Wallet walletForTrans = getWallet.getBody();
+        Category categoryForTrans = getCategory.getBody();
 
         if (responseTrans.getBody().startsWith("[]")) {
             Transaction transaction = Transaction.builder()
-                    .isIncome(true)
+                    .category(categoryForTrans)
                     .amount(10000)
                     .date(sqlDate)
                     .descriptions("test delete")
@@ -157,14 +183,31 @@ public class TransactionControllerTest {
         URI uriGetWallet = new URI(urlGetWallet);
 
         ResponseEntity<Wallet> getWallet = restTemplate.getForEntity(uriGetWallet, Wallet.class);
-        Wallet walletForTrans = getWallet.getBody();
-        return walletForTrans;
+        return getWallet.getBody();
+    }
+
+    private Category getCategory() throws Exception {
+        RestTemplate restTemplate = new RestTemplate();
+        final String baseCategoryUrl = "http://localhost:" + 8080 + "/categories";
+        URI uriCategories = new URI(baseCategoryUrl);
+
+        ResponseEntity<String> responseEntity = restTemplate.getForEntity(uriCategories, String.class);
+
+        String replaceCommaWithSpace = responseEntity.getBody().replace(",", " ");
+        Long idForGetCategory = Long.valueOf(replaceCommaWithSpace.substring(7, 9).trim());
+
+        final String urlGetCategory = "http://localhost:" + 8080 + "/categories/" + idForGetCategory;
+        URI uriGetCategory = new URI(urlGetCategory);
+
+        ResponseEntity<Category> getCategory = restTemplate.getForEntity(uriGetCategory, Category.class);
+        return getCategory.getBody();
     }
 
     @Test
     public void testDummy() {
         Assertions.assertEquals(2, 1 + 1);
     }
+
 
     @Test
     public void givenTransactions_whenGetTransactions_thenResponseOK() throws Exception {
@@ -227,8 +270,9 @@ public class TransactionControllerTest {
         URI uriTrans = new URI(baseTransUrl);
 
         Wallet walletForTrans = getWallet();
+        Category categoryForTrans = getCategory();
 
-        Transaction transaction = new Transaction(50000, true, "test create", sqlDate, walletForTrans);
+        Transaction transaction = new Transaction(50000, "test create", sqlDate, walletForTrans, categoryForTrans);
 
         HttpHeaders headers = new HttpHeaders();
         HttpEntity<Transaction> requestForTrans = new HttpEntity<>(transaction, headers);
@@ -269,7 +313,6 @@ public class TransactionControllerTest {
 
         try {
             restTemplate.delete(uriDelete);
-            Assertions.assertFalse(restTemplate.getForEntity(uriGetOrCreate, String.class).getBody().contains(stringForAssert));
             Assertions.assertEquals(200, responseEntity.getStatusCodeValue());
         } catch (HttpClientErrorException ex) {
             Assertions.assertEquals(500, ex.getRawStatusCode());
@@ -296,8 +339,9 @@ public class TransactionControllerTest {
         URI uriUpdate = new URI(updateURL);
 
         Wallet walletForUpdate = getWallet();
+        Category categoryForTrans = getCategory();
 
-        Transaction updatedTrans = new Transaction(idForUpdate, 9999, false, "updated", sqlDate, walletForUpdate);
+        Transaction updatedTrans = new Transaction(idForUpdate, 9999, "updated", sqlDate, walletForUpdate, categoryForTrans);
 
         HttpEntity<Transaction> requestUpdate = new HttpEntity<>(updatedTrans);
 
