@@ -79,13 +79,16 @@ public class TransactionControllerTest {
     }
 
     @Before
-    public void createWalletUsingForTransTest() throws Exception {
+    public void createWalletAndCategoryUsingForTransTest() throws Exception {
         RestTemplate restTemplate = new RestTemplate();
 
         final String baseWalletUrl = "http://localhost:" + 8080 + "/wallets";
         URI uriWallets = new URI(baseWalletUrl);
+        final String baseCategoryURL = "http://localhost:" + 8080 + "/categories";
+        URI uriCategories = new URI(baseCategoryURL);
 
         ResponseEntity<String> responseWallet = restTemplate.getForEntity(uriWallets, String.class);
+        ResponseEntity<String> responseCategory = restTemplate.getForEntity(uriCategories, String.class);
 
         if (responseWallet.getBody().startsWith("[]")) {
             Wallet wallet1 = Wallet.builder()
@@ -95,21 +98,10 @@ public class TransactionControllerTest {
             HttpEntity<Wallet> request = new HttpEntity<>(wallet1);
             restTemplate.postForEntity(uriWallets, request, String.class);
         }
-    }
-
-    @Before
-    public void createCategoryUsingForTransTest() throws Exception {
-        RestTemplate restTemplate = new RestTemplate();
-
-        final String baseCategoryURL = "http://localhost:" + 8080 + "/categories";
-        URI uriCategories = new URI(baseCategoryURL);
-
-        ResponseEntity<String> responseCategory = restTemplate.getForEntity(uriCategories, String.class);
-
         if (responseCategory.getBody().startsWith("[]")) {
             Category category = Category.builder()
-                    .name("Market")
                     .isIncome(true)
+                    .name("Market")
                     .build();
             HttpEntity<Category> request = new HttpEntity<>(category);
             restTemplate.postForEntity(uriCategories, request, String.class);
@@ -135,6 +127,7 @@ public class TransactionControllerTest {
 
         String replaceCommaWithSpace = responseWallet.getBody().replace(",", " ");
         Long idForGetWallet = Long.valueOf(replaceCommaWithSpace.substring(7, 9).trim());
+
         String replaceCommaWithSpace1 = responseCategory.getBody().replace(",", " ");
         Long idForGetCategory = Long.valueOf(replaceCommaWithSpace1.substring(7, 9).trim());
         System.out.println(idForGetCategory);
